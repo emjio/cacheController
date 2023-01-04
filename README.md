@@ -75,10 +75,10 @@ export function addAddress (params) {
 
 ## methods 方法说明
 
-|  方法名   | 参数  | 说明  |  返回值 |
-|  ---- | -----  |----|----|
-| setCache | key:string, blob:{size:number,data:any}   | 存入缓存，key值唯一，当重复出现会覆盖。bolb size 必传且必必须是数字  | void |
-| haveCache  | key:sytring | 返回缓存中是否含有对应key的缓存不计入读取次数 | boolean 
-| getCache  | key:sytring | 返回缓存中有对应key的缓存 |  (any or null) 
-| removeEarliestCache  | void | 删除最早使用的key对应的缓存 | void 
-| deleteCache | key:string | 删除key对应的缓存 | void 
+|  方法名   | 类型  | 说明  |  
+|  ---- | -----  |----|
+| setCache | (key: string, blob: { size : number, data : any }) => void   | 存入缓存，key值唯一，当重复出现会覆盖。bolb size 必传且必必须是数字  |
+| haveCache  | (key: string) => boolean | 返回缓存中是否含有对应key的缓存不计入读取次数 | 
+| getCache  | (key: string) => any or null | 返回缓存中有对应key的缓存 |  (any or null) 
+| removeEarliestCache | () => void | 删除最早使用的key对应的缓存 | void 
+| deleteCache | (key: string) => void | 删除key对应的缓存 | 
