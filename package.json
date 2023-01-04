@@ -1,6 +1,6 @@
 {
   "name": "cachecontroller",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "a cache controller for cache data from request, can be auto read when a request have finished. and auto remove the least use cache.",
   "main": "./dist/cache.cjs.js",
   "scripts": {
