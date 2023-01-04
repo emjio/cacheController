@@ -1,30 +1,66 @@
-import resolve from 'rollup-plugin-node-resolve';
-import commonjs from 'rollup-plugin-commonjs';
-import json from 'rollup-plugin-json';
-import replace from 'rollup-plugin-replace';
-import { terser } from 'rollup-plugin-terser';
-export default {
-    input: "./src/index.js",
-    output: [
-        {
-            file: "./dist/cache.cjs.js",
-            format: "cjs",
-            sourcemap: true,
-            exports: 'default',
-        },
+const terser = require('rollup-plugin-terser').terser
+const pkg = require('./package.json')
+const nodeResolve = require('rollup-plugin-node-resolve')
+const cjs = require('rollup-plugin-commonjs')
+const { cloneDeep,upperFirst} = require('lodash');
+const filename = pkg.browser.slice(pkg.browser.indexOf('/') + 1, pkg.browser.indexOf('.'))
+const path = require('path')
+
+const resolve = (dir) => {
+  return path.join(__dirname, dir)
+}
+
+const out = [
+  {
+    file: pkg.main,
+    format: 'cjs'
+  },
+  {
+    file: pkg.module,
+    format: 'esm'
+  },
+  {
+    file: pkg.browser,
+    format: 'umd',
+    // 对外导出名首字母友好的大写
+    // example: 当 filename 为 vue 时，模块名即为 Vue
+    name: upperFirst(filename)
+  }
+]
+
+// 最小化版本文件头注释信息
+const banner =
+  `/*!
+ * ${pkg.name} v${pkg.version}
+ * (c) 2020-2021 ${pkg.author}
+ * Released under the ${pkg.license} License.
+ */
+`;
+
+// 最小化版本处理函数
+const minimize = (obj) => {
+  // 深拷贝
+  const minObj = cloneDeep(obj)
+  // 文件名添加 .min
+  minObj.file = minObj.file.slice(0, minObj.file.lastIndexOf('.js')) + '.min.js'
+  // 只对最小化版本去除 console，并压缩 js
+  minObj.plugins = [terser({ compress: { drop_console: true } })]
+  // 只对最小化版本添加文件头注释信息
+  minObj.banner = banner
+  return minObj
+}
+
+module.exports = {
+  input: resolve('src/index.js'),
+  output: [
+    ...out, ...out.map(type => {
+      type.file = resolve(type.file)
+      return minimize(type)
+    }),
     ],
-    plugins: [
-        resolve({
-            jsnext: true,  // 该属性是指定将Node包转换为ES2015模块
-            // main 和 browser 属性将使插件决定将那些文件应用到bundle中
-            main: true,  // Default: true 
-            browser: true // Default: false
-        }),
-        commonjs(),
-        json(),
-        replace({
-            ENV: JSON.stringify(process.env.NODE_ENV || 'development')
-        }),
-        terser()
-    ]
-}; 
+    plugins:[
+        nodeResolve(),
+        cjs()
+
+  ]
+}
