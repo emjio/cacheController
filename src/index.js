@@ -1,17 +1,29 @@
 /**
  * @description 缓存生成器,对请求数据做缓存当重复请求的时候读取缓存而不是走http请求 当存满cache 的时候移除最少使用的cache
+ * 
  */
 
 export default class CacheController {
     #size = 0;
     #cacheBlob = new Map()
-    #useQuene ={}
+    #useQuene = {}
     #maxSize = 10
     #maxUseTime = 3
+    /**
+     * 
+     * @param { Object } props init参数 
+     */
     constructor(props) {
-        this.#maxSize = props.maxSize
-        this.#maxUseTime = props.maxUseTime
-        this.axiosInstance =  props.axios;
+        const { maxSize, maxUseTime } = {...props}
+        if (maxSize <= 0 || isNaN(maxSize)) {
+            throw new Error('maxSize should be a number');
+        }
+        if (maxUseTime  <= 0 || isNaN(maxUseTime)) {
+            throw new Error('maxSize should be a number');
+        }
+        this.#maxSize = maxSize
+        this.#maxUseTime = maxUseTime
+        this.axiosInstance = props.axios;
     }
 
     setCache(key, blob) {
