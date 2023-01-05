@@ -12,6 +12,7 @@
     "build": "rollup -c",
     "release": "standard-version",
     "dev": "rollup -c -w",
+    "serve": "node ./example/server.js",
     "build:prod": "NODE_ENV=production ./node_modules/.bin/rollup -c"
   },
   "keywords": [
@@ -22,17 +23,20 @@
     "dist/*.js",
     "types/*.d.ts"
   ],
-  
   "author": "emjio",
   "license": "MIT",
   "devDependencies": {
+    "eslint": "^7.27.0",
+    "express": "^4.18.2",
+    "express-urlrewrite": "^2.0.0",
     "rollup": "^3.9.1",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-terser": "^7.0.2",
     "rollup-watch": "^4.3.1",
     "standard-version": "^9.5.0",
-    "eslint": "^7.27.0"
+    "webpack": "^5.75.0",
+    "webpack-dev-middleware": "^6.0.1"
   },
   "dependencies": {
     "lodash": "^4.17.21"

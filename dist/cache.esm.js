@@ -14,11 +14,11 @@ class CacheController {
      * @param { Object } props init参数 
      */
     constructor(props) {
-        const { maxSize, maxUseTime } = {...props};
+        const { maxSize, maxUseTime } = { ...props };
         if (maxSize <= 0 || isNaN(maxSize)) {
             throw new Error('maxSize should be a number');
         }
-        if (maxUseTime  <= 0 || isNaN(maxUseTime)) {
+        if (maxUseTime <= 0 || isNaN(maxUseTime)) {
             throw new Error('maxSize should be a number');
         }
         this.#maxSize = maxSize;
@@ -39,7 +39,6 @@ class CacheController {
     haveCache(key) {
         return this.#cacheBlob.has(key)
     }
-
     getCache(key) {
         let cache = null;
         if (key in this.#useQuene) {
@@ -50,6 +49,21 @@ class CacheController {
             }
         }
         return cache
+    }
+
+    generateRequest(fn) {
+        return async (params) => {
+            if (this.haveCache(fn)) {
+                return this.getCache(fn)
+            }
+            try {
+                const data = await fn(params);
+                this.setCache(fn(params), { data, size: 1 });
+                return data
+            } catch (e) {
+                throw new Error(e)
+            }
+        }
     }
 
     removeEarliestCache() {
