@@ -7,6 +7,10 @@ export interface Blob<T=any>{
     size: number;
     data:T
 } 
+
+export interface Request {
+ (params:any):Promise<any>
+}
 export  class CacheController  {
     #size:number;
     #cacheBlob:Map<string>;
@@ -18,4 +22,5 @@ export  class CacheController  {
     getCache: (key:string)=>any;
     removeCache: (key:string)=>void;
     removeEarliestCache: (key:string)=>void;
+    generateRequest:(key:string,fn:Request)=> Promise<any>
 }

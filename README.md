@@ -8,7 +8,7 @@ a cache controller for cache data from request, can be auto read when a request 
 用于和请求混合使用以达到缓存请求的作用
 
 # Example
-
+ 1. 配合请求拦截器使用
 ```javascript
 // axios.js
 
@@ -64,6 +64,31 @@ export function addAddress (params) {
 }
 
 ```
+2. 配合缓存生成器使用
+
+```javascript 
+import cacheController from 'cachecontroller'
+const requestCacheController = new cacheController({ maxSize: 50, maxUseTime: 3 })
+
+const request = (params)=>{    
+   return fetch(`https://api.apiopen.top/api/sentences?page=${params.page}&size=${params.size}`)
+    .then((res)=> res.json())
+    .then((json)=> json)
+}
+const params = {
+    page:1,
+    size:2
+}
+const api = requestCacheController.generateRequest(`sentences`,request)
+    api(params).then(res=>{
+        if(res.code===200){
+        // do sth
+        }
+    }).catch(e=>{
+        // console.log(e)
+    })
+
+```
 
 ## Params 实例参数说明
 
@@ -81,6 +106,7 @@ export function addAddress (params) {
 | getCache  | (key: string) => any or null | 返回缓存中有对应key的缓存 |  (any or null)
 | removeEarliestCache | () => void | 删除最早使用的key对应的缓存 | void
 | deleteCache | (key: string) => void | 删除key对应的缓存 |
+|generateRequest| (key: string, ()=> Promise) => void | 为一个请求方法生成一个自动缓存的请求方法 |
 
 ## Development Setup  开发启动
 
