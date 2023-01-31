@@ -3,7 +3,7 @@
  * 
  */
 
-export default class CacheController {
+class CacheController {
     #size = 0;
     #cacheBlob = new Map()
     #useQuene = {}
@@ -14,38 +14,38 @@ export default class CacheController {
      * @param { Object } props init参数 
      */
     constructor(props) {
-        const { maxSize, maxUseTime } = { ...props }
+        const { maxSize, maxUseTime } = { ...props };
         if (maxSize <= 0 || isNaN(maxSize)) {
             throw new Error('maxSize should be a number');
         }
         if (maxUseTime <= 0 || isNaN(maxUseTime)) {
             throw new Error('maxSize should be a number');
         }
-        this.#maxSize = maxSize
-        this.#maxUseTime = maxUseTime
+        this.#maxSize = maxSize;
+        this.#maxUseTime = maxUseTime;
         this.axiosInstance = props.axios;
     }
 
     setCache(key, blob) {
         while (this.#size + blob.size > this.#maxSize && this.#size !== 0) {
-            this.removeEarliestCache()
+            this.removeEarliestCache();
         }
 
-        this.#cacheBlob.set(key, blob)
-        this.#useQuene[key] = 0
-        this.#size += blob.size
+        this.#cacheBlob.set(key, blob);
+        this.#useQuene[key] = 0;
+        this.#size += blob.size;
     }
 
     haveCache(key) {
         return this.#cacheBlob.has(key)
     }
     getCache(key) {
-        let cache = null
+        let cache = null;
         if (key in this.#useQuene) {
-            cache = this.#cacheBlob.get(key).data
-            this.#useQuene[key] += 1
+            cache = this.#cacheBlob.get(key).data;
+            this.#useQuene[key] += 1;
             if (this.#useQuene[key] >= this.#maxUseTime) {
-                this.deleteCache(key)
+                this.deleteCache(key);
             }
         }
         return cache
@@ -53,7 +53,7 @@ export default class CacheController {
 
     generateRequest(key,fn) {
         return async (params) => {
-            const cacheKey = `${key}-${JSON.stringify(params)}`
+            const cacheKey = `${key}-${JSON.stringify(params)}`;
             if (this.haveCache(cacheKey)) {
                 return this.getCache(cacheKey)
             }
@@ -68,17 +68,19 @@ export default class CacheController {
     }
 
     removeEarliestCache() {
-        const earliestUseKey = Object.keys(this.#useQuene).sort((a, b) => this.#useQuene[a] - this.#useQuene[b])[0]
-        delete this.#useQuene[earliestUseKey]
-        this.#size -= this.#cacheBlob.get(earliestUseKey).size
-        this.#cacheBlob.delete(earliestUseKey)
+        const earliestUseKey = Object.keys(this.#useQuene).sort((a, b) => this.#useQuene[a] - this.#useQuene[b])[0];
+        delete this.#useQuene[earliestUseKey];
+        this.#size -= this.#cacheBlob.get(earliestUseKey).size;
+        this.#cacheBlob.delete(earliestUseKey);
     }
 
     deleteCache(key) {
         if (this.#cacheBlob.has(key)) {
-            delete this.#useQuene[key]
-            this.#size -= this.#cacheBlob.get(key).size
-            this.#cacheBlob.delete(key)
+            delete this.#useQuene[key];
+            this.#size -= this.#cacheBlob.get(key).size;
+            this.#cacheBlob.delete(key);
         }
     }
 }
+
+export { CacheController as default };
