@@ -57,14 +57,15 @@
             return cache
         }
 
-        generateRequest(fn) {
+        generateRequest(key,fn) {
             return async (params) => {
-                if (this.haveCache(fn)) {
-                    return this.getCache(fn)
+                const cacheKey = `${key}-${JSON.stringify(params)}`;
+                if (this.haveCache(cacheKey)) {
+                    return this.getCache(cacheKey)
                 }
                 try {
                     const data = await fn(params);
-                    this.setCache(fn(params), { data, size: 1 });
+                    this.setCache(cacheKey, { data, size: 1 });
                     return data
                 } catch (e) {
                     throw new Error(e)
