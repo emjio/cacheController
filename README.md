@@ -2,10 +2,24 @@
 
 a cache controller for cache data from request, can be auto read when a request have finished. and auto remove the least use cache.
 
+Get started with the documentation, or play with the examples (see how to run them below).
 # Features
 
 缓存控制插件
 用于和请求混合使用以达到缓存请求的作用
+# Install && Use
+```shell
+npm i cachecontroller
+
+```
+```javascript
+
+import CacheController from 'cachecontroller'
+const requestCacheController = new CacheController({ maxSize: 50, maxUseTime: 3 })
+
+```
+
+
 
 # Example
  1. 配合请求拦截器使用
@@ -132,4 +146,5 @@ npm test
 
 ## Todo list
 
-[ ] 实现生成器，对请求函数进行封装，返回一个可执行的promise 实现动态生成缓存请求方法。
+- [X] 实现生成器，对请求函数进行封装，返回一个可执行的promise 实现动态生成缓存请求方法。
+- [ ] 实现缓存持久化储存hook，提供客户端持久化能力。
