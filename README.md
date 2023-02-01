@@ -2,12 +2,16 @@
 
 a cache controller for cache data from request, can be auto read when a request have finished. and auto remove the least use cache.
 
-Get started with the documentation, or play with the examples (see how to run them below).
 # Features
 
 缓存控制插件
 用于和请求混合使用以达到缓存请求的作用
+# Example
+
+play with the [examples](https://github.com/emjio/cacheController/tree/dev/example) (see how to run them below).
+
 # Install && Use
+
 ```shell
 npm i cachecontroller
 
@@ -19,90 +23,6 @@ const requestCacheController = new CacheController({ maxSize: 50, maxUseTime: 3 
 
 ```
 
-
-
-# Example
- 1. 配合请求拦截器使用
-```javascript
-// axios.js
-
-import CacheController from 'cachecontroller'
-const requestCacheController = new CacheController({ maxSize: 50, maxUseTime: 3 })
-
-
-// 创建axios实例
-const service = axios.create({
-    baseURL: '/api',
-    timeout: 15000
-})
-
-
-const request = async (config) =>{
-    //  可自行实现
-        const generateDataStr = config => {
-            const { method, data, params } = config
-            let dataStr = ''
-            if (method === 'get' && params) {
-                dataStr = typeof params !== 'string' ? JSON.stringify(params) : params
-            }
-            if (method === 'post' && data) {
-                dataStr = typeof data !== 'string' ? JSON.stringify(data) : data
-            }
-            return dataStr
-        }
-        const dataStr = generateDataStr(config)
-        const hash = `${method}${url}${dataStr}${unique ? Math.random() : ''}`
-        return new Promise((resolve, reject) => { 
-        if (requestCacheController.haveCache(hash)) {
-            return resolve(requestCacheController.getCache(hash))   
-            }else{
-            const data = await service.request(config)
-            if(config.cache){
-                requestCacheController.setCache(hash, { data, size: 1 })
-            }
-            return data
-        }
-    })
-}
-
-// api.js
-
-import request from 'axios.js'
-
-export function addAddress (params) {
-    return request({
-        url:'/address',
-        params,
-        cache:true
-    })
-}
-
-```
-2. 配合缓存生成器使用
-
-```javascript 
-import cacheController from 'cachecontroller'
-const requestCacheController = new cacheController({ maxSize: 50, maxUseTime: 3 })
-
-const request = (params)=>{    
-   return fetch(`https://api.apiopen.top/api/sentences?page=${params.page}&size=${params.size}`)
-    .then((res)=> res.json())
-    .then((json)=> json)
-}
-const params = {
-    page:1,
-    size:2
-}
-const api = requestCacheController.generateRequest(`sentences`,request)
-    api(params).then(res=>{
-        if(res.code===200){
-        // do sth
-        }
-    }).catch(e=>{
-        // console.log(e)
-    })
-
-```
 
 ## Params 实例参数说明
 
